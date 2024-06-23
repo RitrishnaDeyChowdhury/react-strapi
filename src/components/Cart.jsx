@@ -4,10 +4,14 @@ import { URL } from './utils/Constants';
 import { removeItem, updateItem, clearCart } from './utils/cartSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import usePreviousPath from './hooks/usePreviousPath';
 const Cart = () => {
     const dispatch = useDispatch();
     const cartItems = useSelector((store)=>store.cart.items);
     const [quantities, setQuantities] = useState({});
+
+    const previous_path = usePreviousPath();
 
     const handleQuantityChange = (id, newQty) => {
         setQuantities(prevQuantities => ({...prevQuantities,[id]: newQty}));
@@ -34,25 +38,26 @@ const Cart = () => {
                 
                 <div className='w-full sm:w-[50%] mx-auto mt-28 px-2 bg-white shadow-md'>
                     {
-                        cartItems.map(({id,image,name,price,qty})=>(
+                        cartItems.map(({id,image,name,price,retail_price,qty,isBestSeller})=>(
                             <div key={id} className='bg-white grid grid-cols-[40%_60%] sm:grid-cols-[25%_75%] border-b sm:p-4 p-2 relative'>
+                                {isBestSeller && <span className=" w-auto flex justify-center items-center px-3 bg-red-400 text-[10px] font-medium text-white absolute z-[1] shadow-inner">Best Seller</span>}
                                 <div className='items-center ml-5'>
                                     <Link to={`/product-details/${id}`}><img src={URL+image} alt={name} className='w-3/5 h-full bg-gray-400'/></Link>
                                 </div>
                                 <div className='mt-1'>
                                     <h1 className='text-base font-medium w-[90%]'>{name}</h1>
                                     <div className='flex mt-3'>
-                                        <select className='border-[2px] py-2 w-[50px] text-center rounded-xl bg-gray-200' onChange={(e) => handleQuantityChange(id, Number(e.target.value))}>
+                                        <select className='border-[2px] py-2 w-[50px] text-center rounded-xl bg-gray-200' value={quantities[id] || qty} onChange={(e) => handleQuantityChange(id, Number(e.target.value))}>
                                         {
                                             Array.from({ length: 10 }, (v,i) => i+1).map((i) => (
-                                                <option key={i} value={i} selected={(quantities[id] || qty) === i}>{i}</option>
+                                                <option key={i} value={i}>{i}</option>
                                             ))
                                         }
                                         </select>
                                         {/* <input type='number' value={quantities[id] || qty} className='border-[2px] py-2 w-[50px] text-center rounded-xl bg-gray-200' onChange={(e) => handleQuantityChange(id, Number(e.target.value))}/> */}
                                         <div className='flex mt-[9px]'>
-                                            {/* <h1 className='mx-4 text-sm font-medium text-gray-500'>${price.toFixed(2)}</h1> */}
-                                            <h1 className='text-sm font-medium mx-4'>${(price* (quantities[id] || qty)).toFixed(2)} </h1>
+                                            <del className='mx-4 text-sm font-medium text-gray-500'>${((quantities[id] || qty)*retail_price).toFixed(2)}</del>
+                                            <h1 className='text-sm font-medium'>${(price* (quantities[id] || qty)).toFixed(2)} </h1>
                                         </div>
                                     </div>
                                     <h1 className='absolute cursor-pointer top-2 right-2 ' onClick={() =>handleItemRemove(id)}><FontAwesomeIcon icon="fa-solid fa-xmark" className='text-xl text-gray-500'/></h1>
@@ -83,7 +88,7 @@ const Cart = () => {
                     </div>
                 </div>
             </div>
-            
+            <ToastContainer/>
         </>
     )
 }

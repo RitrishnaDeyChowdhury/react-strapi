@@ -2,21 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { resetItem } from './utils/cartSlice';
-import { ToastContainer } from 'react-toastify';
 import { removeAuth, resetAuth } from './utils/authSlice';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(false);
     const [username, setUsername] = useState('');
-    const cartItems = useSelector( (store)=>store.cart.items);
-    const authUser = useSelector( (store)=>store.auth.authData);
-    const dispatch = useDispatch()
-    
-    useEffect( ()=>{
-        const storedItems = JSON.parse(localStorage.getItem('items'));
-        const storedAuth = JSON.parse(localStorage.getItem('Auth'));
+    const storedItems = JSON.parse(localStorage.getItem('items'));
+    const storedAuth = JSON.parse(localStorage.getItem('Auth'));
+    const dispatch = useDispatch();
 
+    useEffect( ()=>{
+        console.log("nav dispatch");
         if (storedItems) {
             dispatch(resetItem(storedItems));
         }
@@ -24,21 +21,13 @@ const Navbar = () => {
             dispatch(resetAuth(storedAuth));
         }
 
-        
         if (storedAuth && storedAuth.user && storedAuth.user.id) {
             setIsLogin(true);
             setUsername(storedAuth.user.username);
         }
-    },[dispatch])
+    },[storedAuth,storedItems])
 
-    useEffect(() => {
-        if (authUser && authUser.user && authUser.user.id) {
-          setIsLogin(true);
-          setUsername(authUser.user.username);
-        }
-    }, [authUser]);
-
-    const totalCartItem = cartItems.length;
+    const totalCartItem = storedItems.length;
     
     const handleLogout = ()=>{
         dispatch(removeAuth());
@@ -50,12 +39,12 @@ const Navbar = () => {
     return (
         <header className="text-black bg-white body-font fixed w-full z-[2] shadow-lg">
             <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-                <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+                <Link to="/" className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
                     </svg>
                     <span className="ml-3 text-xl font-bold">MyShop</span>
-                </a>
+                </Link>
                 <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
                     <Link className="mr-5 hover:text-gray-900" to="/">Home</Link>
                     <Link className="mr-5 hover:text-gray-900" to="/about">About Us</Link>
@@ -80,12 +69,8 @@ const Navbar = () => {
                             </svg>
                         </button>
                     </Link>
-                }
-
-                
-                
+                } 
             </div>
-            <ToastContainer />
         </header>  
     )
 }

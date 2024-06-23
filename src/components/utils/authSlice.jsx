@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 const authSlice = createSlice({
     name:'auth',
     initialState:{
-        authData:[]
+        authData:[],
+        isAuthenticated: false
     },
     reducers:{
         resetAuth:(state,action)=>{

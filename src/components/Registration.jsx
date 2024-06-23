@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { API_TOKEN, REGISTRATION_API } from './utils/Constants';
 import { ToastContainer } from 'react-toastify';
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addAuth } from './utils/authSlice';
 const Registration = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { register, formState: { errors }, handleSubmit, reset } = useForm();
     const [btnText, setBtnText] = useState('Sign Up');
     const [btnDisabled, setBtnDisabled] = useState(false);

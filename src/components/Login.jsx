@@ -7,15 +7,16 @@ import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAuth } from './utils/authSlice';
-
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const authUser = useSelector((store)=>store.auth.authData);
-
+    const authUser = JSON.parse(localStorage.getItem('Auth'));
     const { register, formState: { errors }, handleSubmit, reset } = useForm();
     const [btnText, setBtnText] = useState('Sign In');
     const [btnDisabled, setBtnDisabled] = useState(false);
+
+    console.log(previous_path);
+
     const onSubmit = async(data)=>{
         setBtnDisabled(true);
         setBtnText('Please wait ...');
@@ -47,8 +48,6 @@ const Login = () => {
             // console.log(result);
             if(result.user){
                 dispatch(addAuth(result))
-                // window.localStorage.setItem('Auth',JSON.stringify(result))
-                // toast.success('You have successfully logged in',{position:'top-right' });
                 setBtnDisabled(false);
                 setBtnText('Sign In');
                 reset()
@@ -74,6 +73,7 @@ const Login = () => {
                     <span className="font-bold"><span className="inline-block h-3 w-3 bg-blue-600"></span> MyShop</span>
                     <span className="">Don't have account? <Link to="/registration" className="font-medium text-blue-600 hover:underline">Sign Up</Link></span>
                 </div>
+                {/* {previous_path} */}
                 <p className="mb-5 text-3xl font-medium">Sign In</p>
                 <p className="mb-6 text-sm"></p>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -94,7 +94,6 @@ const Login = () => {
                 </form>
                 <ToastContainer/>
             </div>
-            
         </>
     )
 }
